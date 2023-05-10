@@ -1,0 +1,5 @@
+---
+ipaclient_domain: my.domain
+ipaadmin_principal: admin
+ipaadmin_password: ipaadminpassword123
+ipaclient_servers: idm-server.my.domain

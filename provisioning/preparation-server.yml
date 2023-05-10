@@ -1,0 +1,66 @@
+---
+- name: prepare ipa server
+  hosts: idm-server
+  become: true
+
+  tasks:
+  - name: Set timezone to Europe/Paris
+    timezone:
+      name: Europe/Paris
+
+  - name: Add epel-release repo
+    yum:
+      name: epel-release
+      state: present
+
+  - name: Add my common tools
+    yum:
+      name: 
+        - wget
+        - tmux
+        - vim
+        - bind-utils
+      state: present
+
+  - name: Add ntpd and firewall for ipa
+    yum:
+      name: 
+        - firewalld
+        - ntp
+      state: present
+
+  - name: enable firewalld
+    systemd: 
+      name: "{{ item }}" 
+      state: started
+      enabled: yes
+    with_items:
+      - firewalld
+      - ntpd
+
+  - name: delete the loopback address
+    lineinfile:
+      path: /etc/hosts
+      regexp: '^127\.0\.0\.1.*idm.*'
+      line: "# disable hostname's loopback"
+
+  - name: add local name resolution
+    blockinfile:
+      path: /etc/hosts
+      marker: "######"
+      insertafter: "### Use local hosts file for name resolution"
+      state: present
+      block: |
+        192.168.56.20   idm-server.my.domain  idm-server
+        192.168.56.21   idm-node1.my.domain   idm-node1
+
+  # need to update nss package or ipa server role will fail
+  - name: yum update
+    yum:
+      name: '*'
+      state: latest
+
+  - name: include ipa server role
+    include_role:
+      name: ipaserver
+

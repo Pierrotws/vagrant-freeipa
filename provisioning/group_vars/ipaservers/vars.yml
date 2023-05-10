@@ -1,0 +1,8 @@
+---
+ipaadmin_password: ipaadminpassword123
+ipadm_password: ipadmpassword123
+ipaserver_domain: my.domain
+ipaserver_realm: MY.DOMAIN
+ipaserver_setup_dns: no
+ipaserver_auto_forwarders: no
+ipaserver_install_packages: yes
